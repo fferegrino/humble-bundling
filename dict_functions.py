@@ -39,16 +39,59 @@ def _remove_keys(data, single_key_to_remove):
                 _remove_keys(value, single_key_to_remove[1:])
         elif len(single_key_to_remove) == 1:
             data.pop(first_key, None)
-        elif isinstance(data[first_key], dict):
-            _remove_keys(data[first_key], single_key_to_remove[1:])
-        elif isinstance(data[first_key], list):
-            _remove_keys(data[first_key], single_key_to_remove[1:])
+        elif first_key in data:
+            if isinstance(data[first_key], dict):
+                _remove_keys(data[first_key], single_key_to_remove[1:])
+            elif isinstance(data[first_key], list):
+                _remove_keys(data[first_key], single_key_to_remove[1:])
 
 
 def remove_keys(data, keys_to_remove):
     for key in keys_to_remove:
         _remove_keys(data, key)
     return data
+
+
+def test_simple_one_non_existing_key():
+    input = {
+        "a": 1,
+        "b": 2,
+        "c": 3,
+    }
+    expected = {
+        "a": 1,
+        "b": 2,
+        "c": 3,
+    }
+    actual = remove_keys(input, ["z"])
+
+    assert actual == expected
+    assert expected == input
+
+
+def test_simple_one_non_existing_key_list():
+    input = {
+        "a": {
+            "b": {
+                "c": {
+                    "d": 1,
+                },
+            },
+        }
+    }
+    expected = {
+        "a": {
+            "b": {
+                "c": {
+                    "d": 1,
+                },
+            },
+        }
+    }
+    actual = remove_keys(input, [["a", "c", "*", "z"]])
+
+    assert actual == expected
+    assert expected == input
 
 
 def test_mixed_list():
