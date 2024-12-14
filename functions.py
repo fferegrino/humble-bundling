@@ -59,3 +59,22 @@ def test_simple_two_level():
 
     assert actual == expected
     assert expected == input
+
+
+def test_simple_three_level():
+    input = {
+        "a": {
+            "b": {
+                "c": 3,
+            }
+        },
+        "d": 4,
+    }
+    expected = {
+        "a": {"b": {}},
+        "d": 4,
+    }
+    actual = remove_keys(input, [["a", "b", "c"]])
+
+    assert actual == expected
+    assert expected == input
