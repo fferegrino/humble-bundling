@@ -15,9 +15,15 @@ def _remove_keys(data, single_key_to_remove):
         data.pop(single_key_to_remove, None)
     elif isinstance(single_key_to_remove, list):
         first_key = single_key_to_remove[0]
-        if len(single_key_to_remove) == 1:
+        if first_key == "[]" and isinstance(data, list):
+            for item in data:
+                _remove_keys(item, single_key_to_remove[1:])
+
+        elif len(single_key_to_remove) == 1:
             data.pop(first_key, None)
         elif isinstance(data[first_key], dict):
+            _remove_keys(data[first_key], single_key_to_remove[1:])
+        elif isinstance(data[first_key], list):
             _remove_keys(data[first_key], single_key_to_remove[1:])
 
 
@@ -25,6 +31,25 @@ def remove_keys(data, keys_to_remove):
     for key in keys_to_remove:
         _remove_keys(data, key)
     return data
+
+
+def test_with_list_level():
+    input = {
+        "a": [
+            {"b": 1},
+            {"c": 2},
+        ]
+    }
+    expected = {
+        "a": [
+            {"b": 1},
+            {},
+        ]
+    }
+    actual = remove_keys(input, [["a", "[]", "c"]])
+
+    assert actual == expected
+    assert expected == input
 
 
 def test_simple_one_level():
